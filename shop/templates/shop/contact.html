@@ -1,0 +1,130 @@
+
+
+
+{% extends 'shop/basic.html' %}
+{% block content %}
+
+<div class="container-fluid my-4">
+    <div class="row">
+        <div class="col-lg-6 offset-lg-3">
+            <div class="container">{% for message in messages %}
+              {{message}}
+            {% endfor %}
+          </div>
+            <!-- THE CONTACT FORM IS HERE -->
+                <h2>Contact me!</h2>
+                <form action="/shop/contact/" method='post'><input type="hidden" name="csrfmiddlewaretoken" value="wlR3XwiI3sOM28pbIxGuixlE9BuqnVqTSrovEyPPu3zcQJlNJn0HTnLDgCwUxV6z">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="name">Your Name</label>
+                        <input type="name" class="form-control" id="name" placeholder="Enter your Name" name="name">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Your Email</label>
+                        <input type="email" class="form-control" id="cemail" placeholder="Enter your Email" name="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Your Phone Number</label>
+                        <input type="text" class="form-control" id="phone" maxlength="10" placeholder="Enter your Phone Number"
+                            name="phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Describe what you want to contact me for here</label>
+                        <textarea type="text" class="form-control" id="message" placeholder="Your message" name="message"></textarea>
+                    </div>
+                    <div class="g-recaptcha" data-sitekey="6LdvcqwUAAAAACmPYNVoiJA7D84xLSQQt5g9p10m"></div>
+                    <button type="submit" class="btn btn-danger mt-2">Submit</button>
+                </form>
+            
+        </div>
+        <hr>
+
+
+</div>
+    </div>
+</div>
+
+{% endblock %}
+  
+{% block title %}
+contact us
+{% endblock %}
+
+{% block css %}
+<style>
+
+
+    .notification-bell {
+      position: absolute;
+      right: 0px;
+    }
+
+    .dropdown-menu-notify {
+      overflow-y: scroll;
+      overflow-x: hidden;
+      max-height: 400px;
+      top: 60px;
+      right: -1px;
+      left: unset;
+      width: 460px;
+      box-shadow: 0px 5px 7px -1px #c1c1c1;
+      padding-bottom: 0px;
+      padding: 0px;
+    }
+
+    ul ul a {
+      background: transparent;
+
+    }
+
+    .dropdown-menu-notify:before {
+      content: "";
+      position: absolute;
+      top: -20px;
+      right: 12px;
+      border: 10px solid white;
+      border-color: transparent transparent white transparent;
+    }
+
+
+
+    .head-notify {
+      padding: 5px 15px;
+      border-radius: 3px 3px 0px 0px;
+    }
+
+    .footer-notify {
+      padding: 5px 15px;
+      border-radius: 0px 0px 3px 3px;
+    }
+
+    .notification-box-notify {
+      padding: 10px 0px;
+    }
+
+    .bg-gray-notify {
+      background-color: #eee;
+    }
+
+    @media (max-width: 640px) {
+      .dropdown-menu-notify {
+        top: 50px;
+        left: -16px;
+        width: 290px;
+      }
+
+      .nav-notify {
+        display: block;
+      }
+
+      .nav-notify .nav-item-notify,
+      .nav-notify .nav-item-notify a {
+        padding-left: 0px;
+      }
+
+      .message-notify {
+        font-size: 13px;
+      }
+    }
+  </style>
+{%  endblock%}

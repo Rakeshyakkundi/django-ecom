@@ -1,0 +1,92 @@
+{% extends 'shop/basic.html' %}
+{% block content %}
+{% load humanize %}
+<br>
+<h1>Product view page</h1>
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <h5>Image :</h5>
+            <div class="row">
+                <img src='/media/{{view.image}}' width="300px" height="200px">
+            </div>
+        </div>
+        <div class="row">
+            <br />
+            Name :{{view.product_name}}<br><br>
+            desc :{{view.desc}}<br><br>
+            publish_date :{{view.publish_date}}<br><br>
+            category :{{view.category}}<br /><br />
+            subcategory :{{view.subcategory}}<br /><br />
+            price :{{view.price}}<br>
+
+        </div>
+    </div>
+
+
+</div>
+
+
+<div class="container">
+    <div class="row">
+        <button class="btn btn-primary">Add to cart</button>
+        <button class="btn btn-primary mx-4">Buy now</button>
+    </div>
+</div>
+<br>
+
+<!-- <div class="container">
+    <div class="fb-like" data-href="http://127.0.0.1:8000/shop/productview/{{view.product_id}}" data-width="" data-layout="standard" data-action="like" data-size="large" data-share="true"></div>
+    
+</div>        
+<div class="container">
+    <div class="row">
+    <div class="fb-comments" data-href="http://127.0.0.1:8000/shop/productview/{{view.product_id}}" data-numposts="5" data-width=""></div>
+    </div>
+</div> -->
+
+<div class="container">
+    <h4>Comments({{counts}}) :</h4>
+    
+
+    <form method="POST" action="{% url 'postComment' %}">
+        {% csrf_token %}
+        <div class="form-group mx-4 my-3 row">
+            <div class="col-md-10">
+                {% if user.is_authenticated %}
+                <input type="text" class="form-control" name='comment' placeholder="Enter comment here">
+                <input type="hidden" name='id' value="{{view.id}}">
+            </div>
+
+            <div class="col-md-2">
+
+                <input type="submit" class="btn btn-primary" value="Submit">
+                {% else %}
+                <input type="button" class="btn btn-primary" value="Login to Comment">
+                {% endif %}
+            </div>
+        </div>
+    </form>
+    {% for  i in comments %}
+
+    <div class="form-group mx-4 my-3 row">
+        <div class="col-md-1 bg"> <img src="/static/shop/test.jpg" style="border-radius:20px; border:2px solid black;"
+                class="rounded mx-auto d-block w-100" alt='user'> </div>
+        <div class="col-md-11 bg">
+            <b>{{i.user.username}}</b><span class="badge badge-secondary">{{i.time | naturaltime}}</span>
+            <div>{{i.comment |safe}}</div>
+           
+        </div>
+    </div>
+    {% endfor %}
+    <br>
+    <br>
+    <br>
+</div>
+
+{% endblock %}
+
+
+{% block title %}
+Product view
+{% endblock %}

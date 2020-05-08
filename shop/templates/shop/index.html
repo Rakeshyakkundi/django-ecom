@@ -1,0 +1,199 @@
+{% extends 'shop/basic.html' %}
+{% block content %}
+{% load static %}
+
+<div class="container">
+  <!--Slideshow starts here -->
+  {% for view,range,nslide in allProds %}
+  <h1 class="my-4">{{view.0.category}}</h1>
+  <div class="row">
+    <div id="demo{{forloop.counter}}" class="col carousel slide my-3" data-ride="carousel">
+      <ul class="carousel-indicators">
+        <li data-target="#demo" data-slide-to="0" class="active"></li>
+        {% for i in range %}
+        <li data-target="#demo{{forloop.parentloop.counter}}" data-slide-to="{{i}}"></li>
+        {% endfor %}
+      </ul>
+      <div class="container carousel-inner no-padding">
+        <div class="carousel-item active">
+          {% for i in view %}
+          <div class="col-xs-3 col-sm-3 col-md-3">
+            <div class="card align-items-center " style="width: 18rem;">
+              <img src='/media/{{i.image}}' class="card-img-top" alt="...">
+              <div class="card-body">
+                <h3 class="card-title" id="namepr{{i.id}}">{{i.product_name}}</h3>
+                <p class="card-text">{{i.desc|slice:"0:30"}}...</p>
+                <h6 class="cart-title">Price : <span id='pricepr{{i.id}}'>{{i.price}}</span></h6>
+                <span id="divpr{{i.id}}" class="divpr"><button id="pr{{i.id}}" class="btn btn-primary cart mx-4">Add to Cart</button></span>
+                <a href="{% url 'prodview' i.id %}"><button class="btn btn-primary">View</button></a>
+              </div>
+            </div>
+          </div>
+          {% if forloop.counter|divisibleby:4 and forloop.counter > 0 and not forloop.last %}
+        </div>
+        <div class="carousel-item">
+          {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <!-- left and right controls for the slide -->
+    <a class="carousel-control-prev" href="#demo{{forloop.counter}}" data-slide="prev">
+      <span class="carousel-control-prev-icon"></span>
+    </a>
+    <a class="carousel-control-next" href="#demo{{forloop.counter}}" data-slide="next">
+      <span class="carousel-control-next-icon"></span>
+    </a>
+  </div>
+</div>
+{% endfor %}
+{% endblock %}
+
+
+
+{% block title %}Home{% endblock %}
+
+
+
+{% block css %}
+
+<style>
+  .col-md-3 {
+    display: inline-block;
+    margin-left: -4px;
+  }
+
+  .carousel-indicators .active {
+    background-color: rgb(17, 6, 168);
+  }
+
+  .col-md-3 img {
+    padding-top: 10px;
+    padding-right: 10px;
+    padding-left: 10px;
+    width: 300px;
+    height: 200px;
+  }
+
+  body .carousel-indicator li {
+    background-color: darkslategrey;
+  }
+
+  body .carousel-indicators {
+    bottom: -35px;
+  }
+
+  body .carousel-control-prev-icon,
+  body .carousel-control-next-icon {
+    background-color: rgb(0, 0, 0);
+    width: 60px;
+    height: 100px;
+  }
+
+  .carousel-control-prev,
+  .carousel-control-next {
+    padding-top: 100px;
+    top: auto;
+    bottom: auto;
+  }
+
+  .carousel-indicators li {
+    background-color: rgb(139, 140, 231);
+  }
+
+  body .no-padding {
+    padding-left: 0;
+    padding-right: 0;
+  }
+</style>
+{% endblock %}
+
+
+{%  block js %}
+
+<script>
+  if (localStorage.getItem('cart') == null) {
+    var cart = {};
+  }
+  else {
+    cart = JSON.parse(localStorage.getItem('cart'));
+    updateCart(cart);
+  }
+
+
+  //$('.cart').click(function(){ 
+  $('.divpr').on('click', 'button.cart', function () {
+    var idstr = this.id.toString();
+    if (cart[idstr] != undefined) {
+      qty = cart[idstr][0] + 1;
+    }
+    else {
+      qty = 1;
+      name = document.getElementById('name' + idstr).innerHTML;
+      price = document.getElementById('price' + idstr).innerHTML;
+      cart[idstr] = [qty, name, price];
+    }
+    updateCart(cart);
+  });
+
+  $('#popcart').popover();
+  updatePopover(cart);
+  
+  function updatePopover(cart) {
+    var popStr = "";
+    popStr = popStr + "<h5> Items in cart</h5><div class='mx-2 my-2'>";
+    var i = 1;
+    for (var item in cart) {
+      if (cart[item][0] != 0) {
+        popStr = popStr + "<b>" + i + "</b>. ";
+        popStr = popStr + document.getElementById('name' + item).innerHTML.slice(0, 19) + " Qty: " + cart[item][0] + '<br>';
+        i = i + 1; 
+      }
+    }
+    popStr = popStr + "</div> ";
+    popStr = popStr + "<a href='/shop/checkout'><div class='btn btn-primary mx-2' >Checkout</div></a>";
+    popStr = popStr + "<a><div class='btn btn-primary'  onclick='clearCart()'>Clear Cart</div></a>  ";
+    document.getElementById('popcart').setAttribute('data-content', popStr);
+    $('#popcart').popover();
+  }
+
+  function updateCart(cart) {
+    var sum = 0;
+    for (var item in cart) {
+      sum = sum + cart[item][0];
+      document.getElementById('div' + item).innerHTML 
+      = "<button id='minus" + item + "' class='btn btn-primary minus'>-</button> <span id='val" +
+       item + "''>" + cart[item][0] + "</span> <button id='plus" + item + "' class='btn btn-primary plus'> + </button>";
+       console.log(cart);
+    }
+    localStorage.setItem('cart', JSON.stringify(cart));
+    document.getElementById('cart').innerHTML = sum;
+    updatePopover(cart);
+  }
+
+  $('.divpr').on('click', 'button.minus', function () {
+    a = this.id.slice(7);
+    cart['pr' + a][0] = cart['pr' + a][0] - 1;
+    cart['pr' + a][0] = Math.max(0, cart['pr' + a][0]);
+    document.getElementById('valpr' + a).innerHTML = cart['pr' + a][0];
+    updateCart(cart);
+  });
+
+  $('.divpr').on('click', 'button.plus', function () {
+    a = this.id.slice(6);
+    cart['pr' + a][0] = cart['pr' + a][0] + 1;
+    document.getElementById('valpr' + a).innerHTML = cart['pr' + a][0];
+    updateCart(cart);
+  });
+
+  function clearCart() {
+    cart = JSON.parse(localStorage.getItem('cart'));
+    for (var item in cart) {
+      document.getElementById('div' + item).innerHTML = '<button id="' + item + '" class="btn btn-primary cart mx-4">Add to Cart</button>'
+    }
+    localStorage.clear();
+    cart = {};
+    updateCart(cart);
+  }
+</script>
+{% endblock %}
